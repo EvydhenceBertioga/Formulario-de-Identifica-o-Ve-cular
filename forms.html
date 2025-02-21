@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Formulário de Identificação</title>
+    <script>
+        function salvarPDF() {
+            window.print();
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            font-size: 12px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 5px;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        .section {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .logo img {
+            max-width: 100px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .signature {
+            margin-top: 10px;
+            text-align: left;
+        }
+        @media print {
+            input[type="file"] {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <input type="file" accept="image/png" onchange="document.getElementById('logo-preview').src = window.URL.createObjectURL(this.files[0])">
+                <br>
+                <img id="logo-preview" src="" alt="Logotipo">
+            </div>
+            <h2>Formulário de Identificação Veicular - Laudo nº: __________</h2>
+        </div>
+        
+        <form>
+            <div class="section">
+                <h3>Identificação do Veículo</h3>
+                <div class="grid-container">
+                    <label>Marca:<input type="text"></label>
+                    <label>Modelo:<input type="text"></label>
+                    <label>Ano:<input type="text"></label>
+                    <label>Placa:<input type="text"></label>
+                    <label>Hodômetro:<input type="text"></label>
+                    <label>Chassi:<input type="text"></label>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Gravação dos Vidros</h3>
+                <div class="grid-container">
+                <label>Parabrisa:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
+                <label>Dianteiro Esquerdo:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
+                <label>Traseiro Esquerdo:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
+                <label>Vidro Traseiro:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
+                <label>Traseiro Direito:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
+                <label>Dianteiro Direito:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
+            </div>
+            
+	    <div class="section">
+                <h3>Etiquetas e Plaquetas de Identificação</h3>
+		<div class="grid-container">
+                <label>Compartimento do Motor:</label> <select><option>Original</option><option>Adulterada</option><option>Ausente</option></select>
+                <label>Batente da Porta Dianteira Direita:</label> <select><option>Original</option><option>Adulterada</option><option>Ausente</option></select>
+                <label>Assoalho:</label> <select><option>Original</option><option>Adulterada</option><option>Ausente</option></select>
+            </div>
+
+	    <div class="section">
+                <h3>Pontos de Identificação Obrigatórios</h3>
+		<div class="grid-container">
+                <label>Motor:</label>
+                <select>
+                    <option>Sem vestígios aparentes de adulteração</option>
+                    <option>Com vestígios de adulteração por remarcação</option>
+                    <option>Com vestígios de adulteração por alteração de caracteres</option>
+                    <option>Com os caracteres de identificação obliterados</option>
+                </select>
+                <label>Câmbio:</label>
+                <select>
+		    <option>Não Verificado</option>
+                    <option>Íntegro, sem vestígios aparentes de adulteração</option>
+                    <option>Com vestígios aparentes de adulteração por remarcação</option>
+                    <option>Com vestígios aparentes de adulteração por alteração dos caracteres</option>
+                </select>
+                <label>Chassi:</label>
+                <select>
+                    <option>Íntegro, sem vestígios aparentes de adulteração</option>
+                    <option>Com pintura não original, sem vestígios aparentes de adulteração</option>
+                    <option>Com vestígios aparentes de adulteração por remarcação</option>
+		    <option>Com oxidação acentuada, comprometendo um ou mais caracteres</option>
+                </select>
+	      </div>
+
+            <div class="section">
+                <h3>Estrutura</h3>
+                <label>Parte Estrutural do Veículo (Com base Resolução CONTRAN nº 810/2020)::</label>
+                <select>
+                    <option>Integra, não exibindo reparos que denotem embate significativo</option>
+                    <option>Com reparos que denotam ocorrência de danos de pequena monta, realiza-dos com qualidade técnica satisfatória</option>
+                    <option>Com reparos que denotam ocorrência de danos de pequena monta, realiza-dos com qualidade técnica não satisfatória</option>
+		    <option>Com reparos que denotam ocorrência de danos de média monta, realiza-dos com qualidade técnica satisfatória</option>
+		    <option>Com reparos que denotam ocorrência de danos de média monta, realiza-dos com qualidade técnica não satisfatória</option>
+		    <option>Com reparos que denotam ocorrência de danos de grande monta</option>>
+                </select>
+            </div>
+            
+            <div class="section">
+                <h3>Equipamentos de Segurança</h3>
+                <div class="grid-container">
+                <label>Para-choques dianteiro e traseiro:</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
+                <label>Retrovisores internos e externos:</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
+                <label>Pneus/Roda sobressalente:</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
+                <label>Faróis principais dianteiros:</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
+                <label>Lanternas traseiras de cor vermelha:</label> <select><option>Aprovado</option><option>RE</option><option>Não Aplicável</option></select>
+                <label>Buzina:</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
+                </div>
+            </div>
+            
+	    <div class="section">
+                <h3>Alterações de Características do Veículo</h3>
+		<div class="grid-container">
+                <label>Transparência dos vidros (Insulfilm):</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
+                <label>Faróis originais (Xenon):</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
+                <label>Sistema de suspensão (Rebaixado):</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
+            </div>		
+
+            <div class="section">
+                <h3>Conclusão</h3>
+                <label>Resultado da Perícia:</label>
+                <select>
+                    <option>Conforme</option>
+                    <option>Conforme c/ Apontamento</option>
+                    <option>Não Conforme</option>
+                </select>
+                <label>Observações:</label>
+                <textarea rows="2"></textarea>
+            </div>
+            
+            <div class="signature">
+                <p>Data: __/__/____</p>
+                <p>Estou ciente e de acordo com as informações. Assinatura do Cliente: __________________________</p>
+            </div>
+            
+            <button type="button" onclick="salvarPDF()">Salvar em PDF</button>
+        </form>
+    </div>
+</body>
+</html>
