@@ -6,12 +6,131 @@
         function salvarPDF() {
             window.print();
         }
+
+        // Mapeamentos de cores para cada categoria com cores mais claras e fonte preta
+        var mappings = {
+            pintura: {
+                "Original": { bg: "lightgreen", fg: "black" },
+                "Repintura": { bg: "lightyellow", fg: "black" },
+                "Recuperado": { bg: "lightcoral", fg: "black" },
+                "Não analisado": { bg: "white", fg: "black" }
+            },
+            estrutura: {
+                "Não Avariado": { bg: "lightgreen", fg: "black" },
+                "Avariado": { bg: "lightcoral", fg: "black" },
+                "Não Aplicável": { bg: "white", fg: "black" }
+            },
+            conclusaoEstrutural: {
+                "Integra, sem reparos significativos": { bg: "lightgreen", fg: "black" },
+                "Reparos de pequena monta, técnica satisfatória": { bg: "lightyellow", fg: "black" },
+                "Reparos de pequena monta, técnica não satisfatória": { bg: "lightyellow", fg: "black" },
+                "Reparos de média monta, técnica satisfatória": { bg: "lightcoral", fg: "black" },
+                "Reparos de média monta, técnica não satisfatória": { bg: "lightcoral", fg: "black" },
+                "Reparos de grande monta": { bg: "lightcoral", fg: "black" }
+            },
+            vidros: {
+                "Original": { bg: "lightgreen", fg: "black" },
+                "Não Original": { bg: "lightyellow", fg: "black" },
+                "Adulterado": { bg: "lightcoral", fg: "black" },
+                "Ausente": { bg: "white", fg: "black" }
+            },
+            etiquetas: {
+                "Original": { bg: "lightgreen", fg: "black" },
+                "Adulterada": { bg: "lightcoral", fg: "black" },
+                "Ausente": { bg: "white", fg: "black" }
+            },
+            equipamentos: {
+                "Aprovado": { bg: "lightgreen", fg: "black" },
+                "Reprovado": { bg: "lightcoral", fg: "black" },
+                "Não Aplicável": { bg: "white", fg: "black" }
+            },
+            alteracoes: {
+                "Aprovado": { bg: "lightgreen", fg: "black" },
+                "Reprovado": { bg: "lightcoral", fg: "black" },
+                "Não Aplicável": { bg: "white", fg: "black" }
+            },
+            laudo: {
+                "Conforme": { bg: "lightgreen", fg: "black" },
+                "Conforme c/ Apontamento": { bg: "lightyellow", fg: "black" },
+                "Não Conforme": { bg: "lightcoral", fg: "black" }
+            },
+            pontosMotor: {
+                "Sem vestígios aparentes de adulteração": { bg: "lightgreen", fg: "black" },
+                "Com vestígios de adulteração por remarcação": { bg: "lightcoral", fg: "black" },
+                "Com vestígios de adulteração por alteração de caracteres": { bg: "lightcoral", fg: "black" },
+                "Com os caracteres de identificação obliterados": { bg: "lightcoral", fg: "black" }
+            },
+            pontosCambio: {
+                "Não Verificado": { bg: "white", fg: "black" },
+                "Íntegro, sem vestígios aparentes de adulteração": { bg: "lightgreen", fg: "black" },
+                "Com vestígios de adulteração por remarcação": { bg: "lightcoral", fg: "black" },
+                "Com vestígios de adulteração por alteração dos caracteres": { bg: "lightcoral", fg: "black" }
+            },
+            pontosChassi: {
+                "Íntegro, sem vestígios aparentes de adulteração": { bg: "lightgreen", fg: "black" },
+                "Com pintura não original, sem vestígios aparentes de adulteração": { bg: "lightyellow", fg: "black" },
+                "Com vestígios aparentes de adulteração por remarcação": { bg: "lightcoral", fg: "black" },
+                "Com oxidação acentuada, comprometendo um ou mais caracteres": { bg: "lightcoral", fg: "black" }
+            }
+        };
+
+        // Atualiza a cor do select com base na categoria e valor selecionado
+        function updateSelectColor(select) {
+            var category = select.getAttribute("data-category");
+            var mapping = mappings[category];
+            var value = select.value.trim();
+            if(mapping && mapping[value]) {
+                select.style.backgroundColor = mapping[value].bg;
+                select.style.color = mapping[value].fg;
+            } else {
+                select.style.backgroundColor = "";
+                select.style.color = "";
+            }
+        }
+
+        // Atualiza automaticamente a "Conclusão Estrutural" com base nos selects de estrutura
+        function updateConclusaoEstrutural() {
+            var estruturaSelects = document.querySelectorAll('.estrutura-select');
+            var count = 0;
+            estruturaSelects.forEach(function(select) {
+                if (select.value === 'Avariado') {
+                    count++;
+                }
+            });
+            var conclusao = document.getElementById('conclusao-estrutural');
+            if(count === 0) {
+                conclusao.value = 'Integra, sem reparos significativos';
+            } else if(count <= 2) {
+                conclusao.value = 'Reparos de pequena monta, técnica satisfatória';
+            } else if(count <= 4) {
+                conclusao.value = 'Reparos de média monta, técnica satisfatória';
+            } else {
+                conclusao.value = 'Reparos de grande monta';
+            }
+            updateSelectColor(conclusao);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Atualiza selects com data-category
+            var selects = document.querySelectorAll('select[data-category]');
+            selects.forEach(function(sel) {
+                updateSelectColor(sel);
+                sel.addEventListener('change', function() {
+                    updateSelectColor(sel);
+                });
+            });
+            // Registra listener para os selects de estrutura
+            var estruturaSelects = document.querySelectorAll('.estrutura-select');
+            estruturaSelects.forEach(function(sel) {
+                sel.addEventListener('change', updateConclusaoEstrutural);
+            });
+        });
     </script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            font-size: 12px;
+            margin: 10mm;
+            font-size: 12.5px;
         }
         .container {
             max-width: 800px;
@@ -22,160 +141,561 @@
         }
         input, select, textarea {
             width: 100%;
-            padding: 5px;
-            margin: 5px 0;
-            font-size: 12px;
+            padding: 3px;
+            margin: 3px 0;
+            font-size: 10px;
         }
         .section {
-            margin-top: 10px;
-            padding: 10px;
+            margin-top: 5px;
+            padding: 5px;
             border: 1px solid #ccc;
         }
         .header {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+        }
+        .logo {
+            margin-right: 20px;
         }
         .logo img {
-            max-width: 100px;
+            max-width: 120px;
         }
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+        .grid-container-3col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
         }
         .signature {
-            margin-top: 10px;
+            margin-top: 5px;
             text-align: left;
         }
         @media print {
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
             input[type="file"] {
                 display: none;
+            }
+            body {
+                margin: 5mm;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <input type="file" accept="image/png" onchange="document.getElementById('logo-preview').src = window.URL.createObjectURL(this.files[0])">
-                <br>
-                <img id="logo-preview" src="" alt="Logotipo">
-            </div>
-            <h2>Formulário de Identificação Veicular - Laudo nº: __________</h2>
+<div class="container">
+    <!-- Cabeçalho com logotipo à esquerda -->
+    <div class="header">
+        <div class="logo">
+            <input type="file" accept="image/png" onchange="document.getElementById('logo-preview').src = window.URL.createObjectURL(this.files[0])">
+            <br>
+            <img id="logo-preview" src="" alt="Logotipo">
         </div>
-        
-        <form>
-            <div class="section">
-                <h3>Identificação do Veículo</h3>
-                <div class="grid-container">
-                    <label>Marca:<input type="text"></label>
-                    <label>Modelo:<input type="text"></label>
-                    <label>Ano:<input type="text"></label>
-                    <label>Placa:<input type="text"></label>
-                    <label>Hodômetro:<input type="text"></label>
-                    <label>Chassi:<input type="text"></label>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h3>Gravação dos Vidros</h3>
-                <div class="grid-container">
-                <label>Parabrisa:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
-                <label>Dianteiro Esquerdo:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
-                <label>Traseiro Esquerdo:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
-                <label>Vidro Traseiro:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
-                <label>Traseiro Direito:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
-                <label>Dianteiro Direito:</label> <select><option>Original</option><option>Não original</option><option>Adulterado</option><option>Ausente</option></select>
-            </div>
-            
-	    <div class="section">
-                <h3>Etiquetas e Plaquetas de Identificação</h3>
-		<div class="grid-container">
-                <label>Compartimento do Motor:</label> <select><option>Original</option><option>Adulterada</option><option>Ausente</option></select>
-                <label>Batente da Porta Dianteira Direita:</label> <select><option>Original</option><option>Adulterada</option><option>Ausente</option></select>
-                <label>Assoalho:</label> <select><option>Original</option><option>Adulterada</option><option>Ausente</option></select>
-            </div>
-
-	    <div class="section">
-                <h3>Pontos de Identificação Obrigatórios</h3>
-		<div class="grid-container">
-                <label>Motor:</label>
-                <select>
-                    <option>Sem vestígios aparentes de adulteração</option>
-                    <option>Com vestígios de adulteração por remarcação</option>
-                    <option>Com vestígios de adulteração por alteração de caracteres</option>
-                    <option>Com os caracteres de identificação obliterados</option>
-                </select>
-                <label>Câmbio:</label>
-                <select>
-		    <option>Não Verificado</option>
-                    <option>Íntegro, sem vestígios aparentes de adulteração</option>
-                    <option>Com vestígios aparentes de adulteração por remarcação</option>
-                    <option>Com vestígios aparentes de adulteração por alteração dos caracteres</option>
-                </select>
-                <label>Chassi:</label>
-                <select>
-                    <option>Íntegro, sem vestígios aparentes de adulteração</option>
-                    <option>Com pintura não original, sem vestígios aparentes de adulteração</option>
-                    <option>Com vestígios aparentes de adulteração por remarcação</option>
-		    <option>Com oxidação acentuada, comprometendo um ou mais caracteres</option>
-                </select>
-	      </div>
-
-            <div class="section">
-                <h3>Estrutura</h3>
-                <label>Parte Estrutural do Veículo (Com base Resolução CONTRAN nº 810/2020)::</label>
-                <select>
-                    <option>Integra, não exibindo reparos que denotem embate significativo</option>
-                    <option>Com reparos que denotam ocorrência de danos de pequena monta, realiza-dos com qualidade técnica satisfatória</option>
-                    <option>Com reparos que denotam ocorrência de danos de pequena monta, realiza-dos com qualidade técnica não satisfatória</option>
-		    <option>Com reparos que denotam ocorrência de danos de média monta, realiza-dos com qualidade técnica satisfatória</option>
-		    <option>Com reparos que denotam ocorrência de danos de média monta, realiza-dos com qualidade técnica não satisfatória</option>
-		    <option>Com reparos que denotam ocorrência de danos de grande monta</option>>
-                </select>
-            </div>
-            
-            <div class="section">
-                <h3>Equipamentos de Segurança</h3>
-                <div class="grid-container">
-                <label>Para-choques dianteiro e traseiro:</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
-                <label>Retrovisores internos e externos:</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
-                <label>Pneus/Roda sobressalente:</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
-                <label>Faróis principais dianteiros:</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
-                <label>Lanternas traseiras de cor vermelha:</label> <select><option>Aprovado</option><option>RE</option><option>Não Aplicável</option></select>
-                <label>Buzina:</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
-                </div>
-            </div>
-            
-	    <div class="section">
-                <h3>Alterações de Características do Veículo</h3>
-		<div class="grid-container">
-                <label>Transparência dos vidros (Insulfilm):</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
-                <label>Faróis originais (Xenon):</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
-                <label>Sistema de suspensão (Rebaixado):</label> <select><option>Aprovado</option><option>Reprovado</option><option>Não Aplicável</option></select>
-            </div>		
-
-            <div class="section">
-                <h3>Conclusão</h3>
-                <label>Resultado da Perícia:</label>
-                <select>
-                    <option>Conforme</option>
-                    <option>Conforme c/ Apontamento</option>
-                    <option>Não Conforme</option>
-                </select>
-                <label>Observações:</label>
-                <textarea rows="2"></textarea>
-            </div>
-            
-            <div class="signature">
-                <p>Data: __/__/____</p>
-                <p>Estou ciente e de acordo com as informações. Assinatura do Cliente: __________________________</p>
-            </div>
-            
-            <button type="button" onclick="salvarPDF()">Salvar em PDF</button>
-        </form>
+        <h2>Formulário de Identificação Veicular - Laudo nº: ________</h2>
     </div>
+
+    <form>
+        <!-- Identificação do Veículo -->
+        <div class="section">
+            <h3>Identificação do Veículo</h3>
+            <div class="grid-container">
+                 <label>Marca:<input type="text"></label>
+                <label>Modelo:<input type="text"></label>
+                <label>Ano/Modelo:<input type="text"></label>
+                <label>Placa:<input type="text"></label>
+                <label>Motor:<input type="text"></label>
+                <label>Chassi:<input type="text"></label>
+		<label>Hodômetro:<input type="text"></label>
+		<label>Cor:<input type="text"></label>
+            </div>
+        </div>
+
+        <!-- Pintura - Gabarito -->
+        <div class="section">
+            <h3>Pintura - Gabarito</h3>
+            <p style="font-style: italic;">Selecione para cada peça a condição de Pintura (Original, Repintura, Recuperado, Não analisado).</p>
+            <div class="grid-container-3col">
+                <label>Capô:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+                <label>Teto:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+                <label>Paralama dianteiro esquerdo:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+                <label>Porta dianteira esquerda:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+                <label>Porta traseira esquerda:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+                <label>Lateral traseira esquerda:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+                <label>Paralama dianteiro direito:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+                <label>Porta dianteira direita:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+                <label>Porta traseira direita:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+                <label>Lateral traseira direita:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+                <label>Tampa Traseira:<br>
+                    <select data-category="pintura">
+                        <option>Original</option>
+                        <option>Repintura</option>
+                        <option>Recuperado</option>
+                        <option>Não analisado</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+        <!-- Estrutura Gabarito -->
+        <div class="section">
+            <h3>Estrutura Gabarito</h3>
+            <p style="font-style: italic;">Selecione para cada peça a condição de Estrutura (Não Avariado, Avariado, Não Aplicável).</p>
+            <div class="grid-container-3col">
+                <label>Longarina Dianteira Esquerda:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Caixa de Roda Dianteira Esquerda:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Soleira Esquerda:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Assoalho Central Esquerdo:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Airbags Frontais:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Coluna Dianteira Esquerda:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Coluna Central Esquerda:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Coluna Traseira Esquerda:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Caixa de Roda Traseira Esquerda:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Longarina Traseira Esquerda:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Longarina Dianteira Direita:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Caixa de Roda Dianteira Direita:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Soleira Direita:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Assoalho Central Direito:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Airbags Laterais:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Coluna Dianteira Direita:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Coluna Central Direita:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Coluna Traseira Direita:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Caixa de Roda Traseira Direita:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Longarina Traseira Direita:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Assoalho Porta-Malas / Caçamba:<br>
+                    <select data-category="estrutura" class="estrutura-select">
+                        <option>Não Avariado</option>
+                        <option>Avariado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+	
+        <!-- Conclusão Estrutural -->
+        <div class="section">
+            <h3>Conclusão Estrutural</h3>
+            <label>Parte Estrutural do Veículo (Resolução CONTRAN nº 810/2020):</label>
+            <select id="conclusao-estrutural" data-category="conclusaoEstrutural">
+                <option>Integra, sem reparos significativos</option>
+                <option>Reparos de pequena monta, técnica satisfatória</option>
+                <option>Reparos de pequena monta, técnica não satisfatória</option>
+                <option>Reparos de média monta, técnica satisfatória</option>
+                <option>Reparos de média monta, técnica não satisfatória</option>
+                <option>Reparos de grande monta</option>
+            </select>
+        </div>
+
+        <!-- Pontos de Identificação Obrigatório -->
+        <div class="section">
+            <h3>Pontos de Identificação Obrigatório</h3>
+            <div class="grid-container-3col">
+                <label>Motor:<br>
+                    <select data-category="pontosMotor">
+                        <option>Sem vestígios aparentes de adulteração</option>
+                        <option>Com vestígios de adulteração por remarcação</option>
+                        <option>Com vestígios de adulteração por alteração de caracteres</option>
+                        <option>Com os caracteres de identificação obliterados</option>
+                    </select>
+                </label>
+                <label>Câmbio:<br>
+                    <select data-category="pontosCambio">
+                        <option>Não Verificado</option>
+                        <option>Íntegro, sem vestígios aparentes de adulteração</option>
+                        <option>Com vestígios de adulteração por remarcação</option>
+                        <option>Com vestígios de adulteração por alteração dos caracteres</option>
+                    </select>
+                </label>
+                <label>Chassi:<br>
+                    <select data-category="pontosChassi">
+                        <option>Íntegro, sem vestígios aparentes de adulteração</option>
+                        <option>Com pintura não original, sem vestígios aparentes de adulteração</option>
+                        <option>Com vestígios aparentes de adulteração por remarcação</option>
+                        <option>Com oxidação acentuada, comprometendo um ou mais caracteres</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+	   <!-- Gravação dos Vidros -->
+        <div class="section">
+            <h3>Gravação dos Vidros</h3>
+            <p style="font-style: italic;">Selecione para cada peça a condição de Vidros (Original, Não Original, Adulterado, Ausente).</p>
+            <div class="grid-container-3col">
+                <label>Parabrisa:<br>
+                    <select data-category="vidros">
+                        <option>Original</option>
+                        <option>Não Original</option>
+                        <option>Adulterado</option>
+                        <option>Ausente</option>
+                    </select>
+                </label>
+                <label>Dianteiro Esquerdo:<br>
+                    <select data-category="vidros">
+                        <option>Original</option>
+                        <option>Não Original</option>
+                        <option>Adulterado</option>
+                        <option>Ausente</option>
+                    </select>
+                </label>
+                <label>Traseiro Esquerdo:<br>
+                    <select data-category="vidros">
+                        <option>Original</option>
+                        <option>Não Original</option>
+                        <option>Adulterado</option>
+                        <option>Ausente</option>
+                    </select>
+                </label>
+                <label>Vidro Traseiro:<br>
+                    <select data-category="vidros">
+                        <option>Original</option>
+                        <option>Não Original</option>
+                        <option>Adulterado</option>
+                        <option>Ausente</option>
+                    </select>
+                </label>
+                <label>Traseiro Direito:<br>
+                    <select data-category="vidros">
+                        <option>Original</option>
+                        <option>Não Original</option>
+                        <option>Adulterado</option>
+                        <option>Ausente</option>
+                    </select>
+                </label>
+                <label>Dianteiro Direito:<br>
+                    <select data-category="vidros">
+                        <option>Original</option>
+                        <option>Não Original</option>
+                        <option>Adulterado</option>
+                        <option>Ausente</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+	 <!-- Etiquetas e Plaquetas de Identificação -->
+        <div class="section">
+            <h3>Etiquetas e Plaquetas de Identificação</h3>
+            <p style="font-style: italic;">Selecione para cada peça a condição de Etiquetas (Original, Adulterada, Ausente).</p>
+            <div class="grid-container-3col">
+                <label>Compartimento do Motor:<br>
+                    <select data-category="etiquetas">
+                        <option>Original</option>
+                        <option>Adulterada</option>
+                        <option>Ausente</option>
+                    </select>
+                </label>
+                <label>Batente da Porta:<br>
+                    <select data-category="etiquetas">
+                        <option>Original</option>
+                        <option>Adulterada</option>
+                        <option>Ausente</option>
+                    </select>
+                </label>
+                <label>Assoalho:<br>
+                    <select data-category="etiquetas">
+                        <option>Original</option>
+                        <option>Adulterada</option>
+                        <option>Ausente</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+        <!-- Equipamentos de Segurança -->
+        <div class="section">
+            <h3>Equipamentos de Segurança</h3>
+            <div class="grid-container-3col">
+                <label>Para-choques dianteiro e traseiro:<br>
+                    <select data-category="equipamentos">
+                        <option>Aprovado</option>
+                        <option>Reprovado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Retrovisores internos e externos:<br>
+                    <select data-category="equipamentos">
+                        <option>Aprovado</option>
+                        <option>Reprovado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Pneus/Roda sobressalente:<br>
+                    <select data-category="equipamentos">
+                        <option>Aprovado</option>
+                        <option>Reprovado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Faróis principais dianteiros:<br>
+                    <select data-category="equipamentos">
+                        <option>Aprovado</option>
+                        <option>Reprovado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Lanternas traseiras de cor vermelha:<br>
+                    <select data-category="equipamentos">
+                        <option>Aprovado</option>
+                        <option>Reprovado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Buzina:<br>
+                    <select data-category="equipamentos">
+                        <option>Aprovado</option>
+                        <option>Reprovado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+        <!-- Alterações de Características do Veículo -->
+        <div class="section">
+            <h3>Alterações de Características do Veículo</h3>
+            <div class="grid-container-3col">
+                <label>Transparência dos vidros (Insulfilm):<br>
+                    <select data-category="alteracoes">
+                        <option>Aprovado</option>
+                        <option>Reprovado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Faróis originais (Xenon):<br>
+                    <select data-category="alteracoes">
+                        <option>Aprovado</option>
+                        <option>Reprovado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+                <label>Sistema de suspensão (Rebaixado):<br>
+                    <select data-category="alteracoes">
+                        <option>Aprovado</option>
+                        <option>Reprovado</option>
+                        <option>Não Aplicável</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+        <!-- Conclusão do Laudo -->
+        <div class="section">
+            <h3>Conclusão</h3>
+            <label>Resultado do Laudo:</label>
+            <select data-category="laudo">
+                <option>Conforme</option>
+                <option>Conforme c/ Apontamento</option>
+                <option>Não Conforme</option>
+            </select>
+            <label>Observações:</label>
+            <textarea rows="2"></textarea>
+        </div>
+
+        <!-- Assinatura e Dados -->
+        <div class="signature">
+            <p>Nome do Vistoriador: _______________________  Data: ____/____/_______</p>
+            <p> Estou ciente e de acordo com as informações. Assinatura do Cliente: _____________________________</p>
+        </div>
+
+        <button type="button" onclick="salvarPDF()">Salvar em PDF</button>
+    </form>
+</div>
 </body>
 </html>
